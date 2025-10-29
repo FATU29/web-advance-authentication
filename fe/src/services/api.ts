@@ -1,4 +1,7 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+// Use /api for production (Nginx proxy), or env variable for development
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? "/api" : "http://localhost:8081");
 
 export interface RegisterData {
   email: string;
