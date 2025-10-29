@@ -1,0 +1,26 @@
+# Backend
+be/target/
+be/.mvn/
+be/mvnw
+be/mvnw.cmd
+be/*.iml
+be/.idea/
+be/.vscode/
+
+# Frontend
+fe/node_modules/
+fe/build/
+fe/.env
+fe/.env.local
+fe/.DS_Store
+
+# Docker
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
