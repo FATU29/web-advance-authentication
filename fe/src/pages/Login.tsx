@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +15,7 @@ import {
   Stack,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import AlertDialog from "../components/AlertDialog";
 
 const GradientBox = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
@@ -40,6 +42,18 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
+  const [dialog, setDialog] = useState<{
+    open: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    open: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
+
   const {
     register,
     handleSubmit,
@@ -51,72 +65,95 @@ const Login = () => {
   const onSubmit = (data: LoginFormData) => {
     // Mock login - no backend logic required as per requirements
     console.log("Login data:", data);
-    alert("Login successful! (Mock)");
+    setDialog({
+      open: true,
+      type: "success",
+      title: "Login Successful!",
+      message: "You have successfully logged in. (Mock functionality)",
+    });
+  };
+
+  const handleDialogClose = () => {
+    setDialog((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleSuccessConfirm = () => {
+    setDialog((prev) => ({ ...prev, open: false }));
     navigate("/");
   };
 
   return (
-    <GradientBox>
-      <Container maxWidth="sm">
-        <StyledCard>
-          <CardHeader sx={{ textAlign: "center", pb: 1 }}>
-            <Typography
-              variant="h4"
-              component="h1"
-              fontWeight="bold"
-              gutterBottom
-            >
-              Welcome back
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Enter your credentials to login
-            </Typography>
-          </CardHeader>
-          <CardContent>
-            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={3}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  type="email"
-                  placeholder="john@example.com"
-                  {...register("email")}
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                />
-                <TextField
-                  fullWidth
-                  label="Password"
-                  type="password"
-                  placeholder="••••••••"
-                  {...register("password")}
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  sx={{ py: 1.5 }}
-                >
-                  Login
-                </Button>
-                <Typography variant="body2" textAlign="center">
-                  Don't have an account?{" "}
-                  <Link
-                    to="/signup"
-                    style={{ color: "#1976d2", textDecoration: "none" }}
+    <>
+      <AlertDialog
+        open={dialog.open}
+        onClose={handleDialogClose}
+        type={dialog.type}
+        title={dialog.title}
+        message={dialog.message}
+        onConfirm={dialog.type === "success" ? handleSuccessConfirm : undefined}
+      />
+      <GradientBox>
+        <Container maxWidth="sm">
+          <StyledCard>
+            <CardHeader sx={{ textAlign: "center", pb: 1 }}>
+              <Typography
+                variant="h4"
+                component="h1"
+                fontWeight="bold"
+                gutterBottom
+              >
+                Welcome back
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Enter your credentials to login
+              </Typography>
+            </CardHeader>
+            <CardContent>
+              <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+                <Stack spacing={3}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    type="email"
+                    placeholder="john@example.com"
+                    {...register("email")}
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    placeholder="••••••••"
+                    {...register("password")}
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    sx={{ py: 1.5 }}
                   >
-                    Sign up
-                  </Link>
-                </Typography>
-              </Stack>
-            </Box>
-          </CardContent>
-        </StyledCard>
-      </Container>
-    </GradientBox>
+                    Login
+                  </Button>
+                  <Typography variant="body2" textAlign="center">
+                    Don't have an account?{" "}
+                    <Link
+                      to="/signup"
+                      style={{ color: "#1976d2", textDecoration: "none" }}
+                    >
+                      Sign up
+                    </Link>
+                  </Typography>
+                </Stack>
+              </Box>
+            </CardContent>
+          </StyledCard>
+        </Container>
+      </GradientBox>
+    </>
   );
 };
 

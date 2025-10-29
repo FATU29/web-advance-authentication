@@ -13,7 +13,7 @@ A complete user registration and authentication system with Spring Boot backend 
 - CORS configuration for frontend integration
 
 ### Frontend (React + TypeScript)
-- Modern UI with shadcn/ui and Tailwind CSS
+- Modern UI with Material-UI (MUI)
 - Form validation with React Hook Form and Zod
 - API integration with React Query
 - Responsive design
@@ -22,92 +22,85 @@ A complete user registration and authentication system with Spring Boot backend 
 ## 📋 Requirements
 
 - Docker and Docker Compose
-- Java 17 (for local development)
-- Node.js 18+ (for local development)
-- Maven (for local development)
 
-## 🐳 Quick Start with Docker
+## 🐳 Cài đặt và Chạy với Docker
 
-The easiest way to run the entire application is using Docker Compose:
+### 1. Cài đặt Docker và Docker Compose
+
+Đảm bảo bạn đã cài đặt Docker và Docker Compose trên máy:
 
 ```bash
-# Clone the repository and navigate to the project directory
+# Kiểm tra Docker
+docker --version
+
+# Kiểm tra Docker Compose
+docker compose version
+```
+
+Nếu chưa cài đặt, tham khảo:
+- **Ubuntu/Debian**: https://docs.docker.com/engine/install/ubuntu/
+- **Windows**: https://docs.docker.com/desktop/install/windows-install/
+- **macOS**: https://docs.docker.com/desktop/install/mac-install/
+
+### 2. Chạy ứng dụng
+
+```bash
+# Di chuyển vào thư mục project
 cd authen
 
-# Start all services (PostgreSQL, Backend, Frontend)
-docker-compose up --build
-
-# The application will be available at:
-# - Frontend: http://localhost:3000
-# - Backend API: http://localhost:8080
-# - PostgreSQL: localhost:5432
+# Build và khởi động tất cả services (PostgreSQL, Backend, Frontend)
+docker compose up --build
 ```
 
-To stop the services:
+Lần đầu chạy sẽ mất vài phút để build images. Các lần sau sẽ nhanh hơn nhờ Docker cache.
+
+### 3. Truy cập ứng dụng
+
+Sau khi build và start thành công, ứng dụng sẽ có sẵn tại:
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8081
+- **PostgreSQL**: localhost:5433
+
+### 4. Dừng ứng dụng
+
+Để dừng tất cả services:
+
 ```bash
-docker-compose down
+# Dừng services (giữ lại data)
+docker compose down
+
+# Dừng và xóa tất cả data (database sẽ bị reset)
+docker compose down -v
 ```
 
-To stop and remove volumes (database data):
+### 5. Xem logs
+
 ```bash
-docker-compose down -v
+# Xem logs của tất cả services
+docker compose logs -f
+
+# Xem logs của một service cụ thể
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f postgres
 ```
 
-## 💻 Local Development Setup
+### 6. Rebuild lại containers
 
-### Backend Setup
+Nếu có thay đổi code và cần build lại:
 
-1. **Navigate to backend directory:**
 ```bash
-cd be
+# Rebuild và restart
+docker compose up --build
+
+# Hoặc rebuild không chạy
+docker compose build
+
+# Rebuild một service cụ thể
+docker compose build backend
+docker compose build frontend
 ```
-
-2. **Start PostgreSQL (using Docker):**
-```bash
-docker run -d \
-  --name authen-postgres \
-  -e POSTGRES_DB=authen_db \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=password \
-  -p 5432:5432 \
-  postgres:15-alpine
-```
-
-3. **Run the Spring Boot application:**
-```bash
-# Using Maven
-./mvnw spring-boot:run
-
-# Or using Maven wrapper (if mvnw is not available)
-mvn spring-boot:run
-```
-
-The backend will start on `http://localhost:8080`
-
-### Frontend Setup
-
-1. **Navigate to frontend directory:**
-```bash
-cd fe
-```
-
-2. **Install dependencies:**
-```bash
-npm install
-```
-
-3. **Create environment file:**
-Create a `.env` file in the `fe` directory:
-```
-REACT_APP_API_URL=http://localhost:8080
-```
-
-4. **Start the development server:**
-```bash
-npm start
-```
-
-The frontend will start on `http://localhost:3000`
 
 ## 📡 API Endpoints
 
@@ -180,14 +173,6 @@ authen/
 ├── fe/                          # Frontend (React)
 │   ├── public/
 │   ├── src/
-│   │   ├── components/
-│   │   │   └── ui/              # shadcn/ui components
-│   │   │       ├── button.tsx
-│   │   │       ├── card.tsx
-│   │   │       ├── input.tsx
-│   │   │       └── label.tsx
-│   │   ├── lib/
-│   │   │   └── utils.ts
 │   │   ├── pages/
 │   │   │   ├── Home.tsx
 │   │   │   ├── Login.tsx
@@ -199,8 +184,7 @@ authen/
 │   │   └── index.tsx
 │   ├── Dockerfile
 │   ├── nginx.conf
-│   ├── package.json
-│   └── tailwind.config.js
+│   └── package.json
 ├── docker-compose.yml
 └── README.md
 ```
@@ -231,16 +215,25 @@ authen/
 
 ## 🧪 Testing the Application
 
-1. **Start the application** using Docker Compose or local setup
-2. **Open browser** and navigate to `http://localhost:3000`
-3. **Click "Sign Up"** to create a new account
-4. **Fill in the form** with:
+1. **Chạy ứng dụng với Docker:**
+```bash
+docker compose up --build
+```
+
+2. **Mở trình duyệt** và truy cập: http://localhost:3000
+
+3. **Click "Sign Up"** để tạo tài khoản mới
+
+4. **Điền form** với thông tin:
    - Email: test@example.com
    - Password: password123
    - Confirm Password: password123
-5. **Submit the form** - you should see a success message
-6. **Try registering again** with the same email - you should see an error
-7. **Click "Login"** to see the login page (mock functionality)
+
+5. **Submit form** - bạn sẽ thấy thông báo thành công
+
+6. **Thử đăng ký lại** với cùng email - bạn sẽ thấy lỗi "email already exists"
+
+7. **Click "Login"** để xem trang đăng nhập (chức năng mock)
 
 ## 🔒 Security Features
 
@@ -252,16 +245,18 @@ authen/
 
 ## 📝 Environment Variables
 
-### Backend (application.properties)
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/authen_db
-spring.datasource.username=postgres
-spring.datasource.password=password
-```
+### Docker Compose
 
-### Frontend (.env)
+Các biến môi trường được cấu hình trong `docker-compose.yml`:
+
+- **PostgreSQL**: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`
+- **Backend**: `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`
+
+### Frontend (.env) - Cho local development
+
+Nếu chạy frontend local (không dùng Docker), tạo file `.env` trong thư mục `fe`:
 ```
-REACT_APP_API_URL=http://localhost:8080
+VITE_API_URL=http://localhost:8081
 ```
 
 ## 🚢 Deployment
@@ -283,7 +278,7 @@ The application is containerized and ready for deployment to any cloud platform 
 ✅ **Frontend Implementation (5 points)**
 - Routing (Home, Login, Sign Up) - 1 point
 - Sign Up Page (Form, Validation, API Integration with React Query) - 2 points
-- Login Page (Form, Validation, UI with shadcn/ui) - 2 points
+- Login Page (Form, Validation, UI with Material-UI) - 2 points
 
 ✅ **Deployment (1 point)**
 - Docker configuration ready for public deployment
@@ -292,20 +287,54 @@ The application is containerized and ready for deployment to any cloud platform 
 
 ## 🐛 Troubleshooting
 
-### Backend won't start
-- Ensure PostgreSQL is running
-- Check database credentials in `application.properties`
-- Verify Java 17 is installed
-
-### Frontend won't start
-- Run `npm install` to ensure all dependencies are installed
-- Check that backend is running on port 8080
-- Verify `.env` file exists with correct API URL
-
 ### Docker issues
-- Ensure Docker and Docker Compose are installed
-- Try `docker-compose down -v` to clean up volumes
-- Check that ports 3000, 5432, and 8080 are not in use
+
+**Lỗi port đã được sử dụng:**
+```bash
+Error: Ports are not available: exposing port TCP 0.0.0.0:XXXX
+```
+
+Giải pháp:
+1. Kiểm tra port nào đang được sử dụng:
+```bash
+# Linux/Mac
+sudo lsof -i :3000
+sudo lsof -i :8081
+sudo lsof -i :5433
+
+# Hoặc tìm process
+sudo netstat -tulpn | grep :3000
+```
+
+2. Dừng process đang sử dụng port hoặc thay đổi port trong `docker-compose.yml`
+
+3. Xóa containers cũ:
+```bash
+docker compose down
+docker system prune -f
+```
+
+**Backend không kết nối được database:**
+- Đảm bảo PostgreSQL container đã start và healthy
+- Kiểm tra logs: `docker compose logs postgres`
+- Chờ vài giây để PostgreSQL khởi động xong
+
+**Frontend không load được:**
+- Kiểm tra logs: `docker compose logs frontend`
+- Đảm bảo backend đã chạy thành công
+- Xóa build cache và rebuild: `docker compose build --no-cache frontend`
+
+**Xóa tất cả và build lại từ đầu:**
+```bash
+# Dừng và xóa tất cả
+docker compose down -v
+
+# Xóa images
+docker rmi authen-backend authen-frontend
+
+# Build lại
+docker compose up --build
+```
 
 ## 👥 Author
 
